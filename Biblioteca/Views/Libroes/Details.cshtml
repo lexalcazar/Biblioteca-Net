@@ -1,0 +1,62 @@
+﻿@model Biblioteca.Models.Libro
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+
+<div>
+    <h4>Libro</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+            <dt class="col-sm-2">Autores</dt>
+            <dd class="col-sm-10">
+                @if (Model.Autores != null && Model.Autores.Any())
+                {
+                    <ul>
+                        @foreach (var a in Model.Autores)
+                        {
+                            <li>@a.Nombre</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span>Sin autores asignados</span>
+                }
+            </dd>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Isbn)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Isbn)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Copias)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Copias)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
+    <a asp-action="Index">Volver a la listat</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+﻿@model List<Biblioteca.Models.Prestamo>
+
+<h2>Mis préstamos</h2>
+
+@if (!Model.Any())
+{
+    <p>No tienes préstamos activos.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>LibroId</th>
+                <th>Fecha fin</th>
+                <th>Renovaciones</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.LibroId</td>
+                    <td>@p.FechaFin</td>
+                    <td>@p.Renovaciones</td>
+                    <td>
+                        <form asp-action="Renovar" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@p.Id" />
+                            <button type="submit">Renovar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Bienvenida";
+}
+<body>
+    <main>
+        <h1>Bienvenido @User.Identity.Name</h1> 
+        <div class="contenedor_general">
+            <div class="contenedor">
+                <h1>Libros</h1>
+                <div class="tarjeta">
+                    <a asp-controller="Libroes" asp-action="Create"><p>Añadir libro</p></a>
+                </div>
+                <div class="tarjeta">
+                    <a asp-controller="Libroes" asp-action="Index"><p>Lista de libros</p></a>
+                </div>
+                <div class="contenedor">
+                    <h1>Autores</h1>
+                    <div class="tarjeta">
+                        <a asp-controller="Autors" asp-action="Create"><p>Añadir autor</p></a>
+                    </div>
+                    <div class="tarjeta">
+                        <a asp-controller="Autors" asp-action="Index"><p>Lista de autores</p></a>
+                    </div>
+            </div>
+        </div>
+    </main>
+</body>

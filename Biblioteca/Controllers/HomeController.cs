@@ -11,6 +11,11 @@ namespace Biblioteca.Controllers
         {
             return View();
         }
+        [Authorize(Roles="Bibliotecario")] 
+        public IActionResult Bienvenida()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {

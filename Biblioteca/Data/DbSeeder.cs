@@ -11,36 +11,49 @@ namespace Biblioteca.Data
 
             // 1) Roles
             string[] roles = { "Usuario", "Bibliotecario" };
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                    await roleManager.CreateAsync(new IdentityRole(role));
-            }
+            foreach (var r in roles)
+                if (!await roleManager.RoleExistsAsync(r))
+                    await roleManager.CreateAsync(new IdentityRole(r));
 
-            // 2) Usuario bibliotecario por defecto
-            var adminEmail = "biblio@local.com";
-            var adminPassword = "Biblio123!"; // cumple mayúscula/minúscula/número/símbolo
+            // 2) Usuarios seed
+            await CrearUsuarioSiNoExiste(userManager,
+                email: "biblio@local.com",
+                password: "Biblio123!",
+                rol: "Bibliotecario");
 
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            if (adminUser == null)
+            await CrearUsuarioSiNoExiste(userManager,
+                email: "usuario@local.com",
+                password: "Usuario123!",
+                rol: "Usuario");
+        }
+
+        private static async Task CrearUsuarioSiNoExiste(
+            UserManager<IdentityUser> userManager,
+            string email,
+            string password,
+            string rol)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null)
             {
-                adminUser = new IdentityUser
+                user = new IdentityUser
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
+                    UserName = email,
+                    Email = email,
                     EmailConfirmed = true
                 };
 
-                var result = await userManager.CreateAsync(adminUser, adminPassword);
+                var result = await userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
                 {
-                    // Si falla por política de password, revisa los errores en result.Errors
+                    // Si falla por política de contraseña, cambia password y vuelve a ejecutar.
                     return;
                 }
             }
 
-            if (!await userManager.IsInRoleAsync(adminUser, "Bibliotecario"))
-                await userManager.AddToRoleAsync(adminUser, "Bibliotecario");
+            if (!await userManager.IsInRoleAsync(user, rol))
+                await userManager.AddToRoleAsync(user, rol);
         }
     }
 }
