@@ -12,21 +12,21 @@
 }
 else
 {
-    <table class="table">
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
         <thead>
             <tr>
-                <th>Email</th>
-                <th>UserName</th>
-                <th>Id</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Email</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">UserName</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Id</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var u in Model)
             {
                 <tr>
-                    <td>@u.Email</td>
-                    <td>@u.UserName</td>
-                    <td style="font-size:12px">@u.Id</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@u.Email</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@u.UserName</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px; font-size:12px">@u.Id</td>
                 </tr>
             }
         </tbody>

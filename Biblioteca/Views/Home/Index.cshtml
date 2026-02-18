@@ -1,8 +1,238 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Biblioteca Municipal";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Biblioteca</h1>
-    
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 20px;
+        border-radius: 15px;
+        margin-bottom: 40px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        opacity: 0.95;
+    }
+
+    .action-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin: 40px 0;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 350px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+    }
+
+    .action-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-card-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+
+    .action-card-title {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .action-card-text {
+        color: #666;
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary-custom {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        color: white;
+    }
+
+    .btn-success-custom {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success-custom:hover {
+        background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        color: white;
+    }
+
+    .info-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 40px 0;
+        border-left: 5px solid #007bff;
+    }
+
+    .info-title {
+        color: #007bff;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .info-text {
+        color: #555;
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+
+    .welcome-back {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .welcome-back-text {
+        color: #155724;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+</style>
+
+<div class="hero-section">
+    <h1 class="hero-title">📚 Bienvenido a la Biblioteca Municipal</h1>
+    <p class="hero-subtitle">Tu puerta al conocimiento y la cultura</p>
 </div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    @if (User.IsInRole("Bibliotecario"))
+    {
+        <div class="welcome-back">
+            <p class="welcome-back-text">✨ Bienvenido de nuevo, <strong>@User.Identity.Name</strong> (Bibliotecario)</p>
+            <a asp-controller="Home" asp-action="Bienvenida" class="btn-custom btn-success-custom">
+                🏠 Ir al Panel de Control
+            </a>
+        </div>
+    }
+    else if (User.IsInRole("Usuario"))
+    {
+        <div class="welcome-back">
+            <p class="welcome-back-text">✨ Bienvenido de nuevo, <strong>@User.Identity.Name</strong></p>
+            <a asp-controller="Home" asp-action="IndexLog" class="btn-custom btn-success-custom">
+                🏠 Ir a Mi Área Personal
+            </a>
+        </div>
+    }
+}
+
+<div class="action-cards">
+    <div class="action-card">
+        <div class="action-card-icon">📖</div>
+        <h2 class="action-card-title">Explora nuestro catálogo</h2>
+        <p class="action-card-text">
+            Descubre nuestra amplia colección de libros disponibles. 
+            Navega por nuestro catálogo y encuentra tu próxima lectura.
+        </p>
+        <a asp-controller="Libroes" asp-action="Index" class="btn-custom btn-primary-custom">
+            🔍 Ver Catálogo
+        </a>
+    </div>
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="action-card">
+            <div class="action-card-icon">👤</div>
+            <h2 class="action-card-title">¿Aún no eres miembro?</h2>
+            <p class="action-card-text">
+                Únete a nuestra comunidad de lectores. Inicia sesión para acceder 
+                a préstamos y servicios exclusivos.
+            </p>
+            <a href="/Identity/Account/Login" class="btn-custom btn-primary-custom">
+                🔐 Iniciar Sesión
+            </a>
+        </div>
+    }
+</div>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="info-section">
+        <h2 class="info-title">💡 ¿Cómo hacerte socio?</h2>
+        <p class="info-text">
+            <strong>Para convertirte en miembro de nuestra biblioteca:</strong>
+        </p>
+        <ul class="info-text" style="margin-top: 15px;">
+            <li style="margin-bottom: 10px;">
+                📍 <strong>Visita nuestra biblioteca</strong> en persona durante el horario de atención
+            </li>
+            <li style="margin-bottom: 10px;">
+                📋 <strong>Consulta con nuestro personal bibliotecario</strong> en el mostrador de información
+            </li>
+            <li style="margin-bottom: 10px;">
+                🆔 <strong>Presenta tu documento de identidad</strong> y completa el formulario de registro
+            </li>
+            <li style="margin-bottom: 10px;">
+                ✅ <strong>Recibe tus credenciales de acceso</strong> y comienza a disfrutar de todos nuestros servicios
+            </li>
+        </ul>
+        <p class="info-text" style="margin-top: 20px;">
+            <em>Nota: El registro es completamente gratuito y te permite acceder a préstamos de libros, 
+            renovaciones en línea y mucho más.</em>
+        </p>
+    </div>
+}
+else
+{
+    <div class="info-section">
+        <h2 class="info-title">📚 Servicios disponibles</h2>
+        <p class="info-text">
+            Como miembro registrado, puedes disfrutar de:
+        </p>
+        <ul class="info-text" style="margin-top: 15px;">
+            <li style="margin-bottom: 10px;">📤 Solicitar préstamos de libros</li>
+            <li style="margin-bottom: 10px;">🔄 Renovar tus préstamos activos</li>
+            <li style="margin-bottom: 10px;">📋 Consultar tus préstamos activos</li>
+            <li style="margin-bottom: 10px;">📚 Ver tu historial completo de préstamos</li>
+            <li style="margin-bottom: 10px;">🔍 Explorar nuestro catálogo completo</li>
+        </ul>
+    </div>
+}

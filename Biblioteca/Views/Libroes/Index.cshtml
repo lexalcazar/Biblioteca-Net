@@ -1,61 +1,143 @@
 ﻿@model IEnumerable<Biblioteca.Models.Libro>
 
-
 @{
-    Layout = null;
+    ViewData["Title"] = "Catálogo de Libros";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <h2>Catálogo de libros</h2>
-    @if (User.IsInRole("Bibliotecario")){
-<p>
-    <a asp-action="Create">Añadir Libro</a>
-</p>
+<style>
+    .catalog-header {
+        text-align: center;
+        margin: 30px 0;
     }
-<table class="table">
-    <thead>
+
+    .catalog-title {
+        color: #007bff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .catalog-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .add-book-section {
+        margin: 20px 0;
+    }
+
+    .btn-add {
+        background: #28a745;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-add:hover {
+        background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        color: white;
+    }
+
+    .public-notice {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        color: #004085;
+    }
+</style>
+
+<div class="catalog-header">
+    <h1 class="catalog-title">📚 Catálogo de Libros</h1>
+    <p class="catalog-subtitle">Explora nuestra colección completa</p>
+</div>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="public-notice">
+        <strong>ℹ️ Modo de visualización pública</strong> - 
+        Para solicitar préstamos, por favor <a href="/Identity/Account/Login" style="color: #004085; text-decoration: underline;">inicia sesión</a> 
+        o consulta con nuestro personal bibliotecario para obtener una cuenta.
+    </div>
+}
+
+@if (User.IsInRole("Bibliotecario"))
+{
+    <div class="add-book-section">
+        <a asp-action="Create" class="btn-add">➕ Añadir Libro</a>
+    </div>
+}
+
+<table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
+    <thead style="background-color: #f8f9fa;">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Titulo)
+            <th style="border: 1px solid #dee2e6; padding: 12px;">
+                📖 @Html.DisplayNameFor(model => model.Titulo)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Isbn)
+            <th style="border: 1px solid #dee2e6; padding: 12px;">
+                🔢 @Html.DisplayNameFor(model => model.Isbn)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Copias)
+            <th style="border: 1px solid #dee2e6; padding: 12px;">
+                📦 @Html.DisplayNameFor(model => model.Copias)
             </th>
-            <th></th>
+            <th style="border: 1px solid #dee2e6; padding: 12px;">Acciones</th>
+            @if (User.IsInRole("Bibliotecario"))
+            {
+                <th style="border: 1px solid #dee2e6; padding: 12px;">Administración</th>
+            }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Titulo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Isbn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Copias)
-            </td>
-                    @if (User.IsInRole("Bibliotecario")){
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">DBorrar</a>
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td style="border: 1px solid #dee2e6; padding: 10px;">
+                    <strong>@Html.DisplayFor(modelItem => item.Titulo)</strong>
+                </td>
+                <td style="border: 1px solid #dee2e6; padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.Isbn)
+                </td>
+                <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                    @if (item.Copias > 0)
+                    {
+                        <span style="color: #28a745; font-weight: bold;">@item.Copias disponibles</span>
                     }
-        </tr>
-}
+                    else
+                    {
+                        <span style="color: #dc3545; font-weight: bold;">No disponible</span>
+                    }
+                </td>
+                <td style="border: 1px solid #dee2e6; padding: 10px;">
+                    <a asp-action="Details" asp-route-id="@item.Id" style="color: #007bff; text-decoration: none;">
+                        🔍 Ver detalles
+                    </a>
+                </td>
+                @if (User.IsInRole("Bibliotecario"))
+                {
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        <a asp-action="Edit" asp-route-id="@item.Id" style="color: #007bff; text-decoration: none; margin-right: 10px;">
+                            ✏️ Editar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" style="color: #dc3545; text-decoration: none;">
+                            🗑️ Borrar
+                        </a>
+                    </td>
+                }
+            </tr>
+        }
     </tbody>
 </table>
-</body>
-</html>
+
+@if (!Model.Any())
+{
+    <div class="public-notice">
+        <p style="margin: 0;">📭 No hay libros disponibles en el catálogo en este momento.</p>
+    </div>
+}

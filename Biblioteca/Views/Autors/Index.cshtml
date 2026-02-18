@@ -15,22 +15,22 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
     <thead>
         <tr>
-            <th>
+            <th style="border: 1px solid #dee2e6; padding: 8px;">
                 @Html.DisplayNameFor(model => model.Nombre)
             </th>
-            <th></th>
+            <th style="border: 1px solid #dee2e6; padding: 8px;"></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            <td style="border: 1px solid #dee2e6; padding: 8px;">
                 @Html.DisplayFor(modelItem => item.Nombre)
             </td>
-            <td>
+            <td style="border: 1px solid #dee2e6; padding: 8px;">
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

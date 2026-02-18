@@ -1,0 +1,258 @@
+@model List<Biblioteca.Models.Prestamo>
+
+@{
+    ViewData["Title"] = "Mi Historial de Préstamos";
+}
+
+<style>
+    .historial-header {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .historial-title {
+        color: #007bff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .historial-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-filter {
+        padding: 8px 20px;
+        border-radius: 6px;
+        border: 2px solid #007bff;
+        background: white;
+        color: #007bff;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover, .btn-filter.active {
+        background: #007bff;
+        color: white;
+    }
+
+    .stats-cards {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        min-width: 150px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+    .prestamo-row {
+        transition: background-color 0.2s ease;
+    }
+
+    .prestamo-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge-activo {
+        background: #28a745;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .badge-devuelto {
+        background: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .badge-renovado {
+        background: #ffc107;
+        color: #212529;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="historial-header">
+    <h1 class="historial-title">📚 Mi Historial de Préstamos</h1>
+    <p class="historial-subtitle">Consulta todos tus préstamos realizados</p>
+</div>
+
+@if (Model.Any())
+{
+    var totalPrestamos = Model.Count;
+    var prestamosActivos = Model.Count(p => !p.Devuelto);
+    var prestamosDevueltos = Model.Count(p => p.Devuelto);
+    var totalRenovaciones = Model.Sum(p => p.Renovaciones);
+
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-number">@totalPrestamos</div>
+            <div class="stat-label">Total de préstamos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #28a745;">@prestamosActivos</div>
+            <div class="stat-label">Préstamos activos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #6c757d;">@prestamosDevueltos</div>
+            <div class="stat-label">Préstamos devueltos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #ffc107;">@totalRenovaciones</div>
+            <div class="stat-label">Renovaciones totales</div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <p style="margin-bottom: 10px; font-weight: 500;">Filtrar por:</p>
+        <div class="filter-buttons">
+            <button class="btn-filter active" onclick="filtrarPrestamos('todos')">📋 Todos</button>
+            <button class="btn-filter" onclick="filtrarPrestamos('activos')">✅ Activos</button>
+            <button class="btn-filter" onclick="filtrarPrestamos('devueltos')">📦 Devueltos</button>
+        </div>
+    </div>
+
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
+        <thead style="background-color: #f8f9fa;">
+            <tr>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📖 Título del Libro</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Fecha Inicio</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Fecha Fin</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">🔄 Renovaciones</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">Estado</th>
+            </tr>
+        </thead>
+        <tbody id="tablaPrestamos">
+            @foreach (var p in Model)
+            {
+                <tr class="prestamo-row" data-estado="@(p.Devuelto ? "devuelto" : "activo")">
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        <strong>@p.Libro.Titulo</strong>
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaInicio.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaFin.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                        @p.Renovaciones
+                        @if (p.Renovaciones > 0)
+                        {
+                            <span class="badge-renovado">@p.Renovaciones vez@(p.Renovaciones > 1 ? "es" : "")</span>
+                        }
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                        @if (p.Devuelto)
+                        {
+                            <span class="badge-devuelto">✓ Devuelto</span>
+                        }
+                        else
+                        {
+                            <span class="badge-activo">● Activo</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <script>
+        function filtrarPrestamos(filtro) {
+            // Actualizar botones activos
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filtrar filas
+            const filas = document.querySelectorAll('.prestamo-row');
+            filas.forEach(fila => {
+                const estado = fila.getAttribute('data-estado');
+                if (filtro === 'todos') {
+                    fila.style.display = '';
+                } else if (filtro === 'activos' && estado === 'activo') {
+                    fila.style.display = '';
+                } else if (filtro === 'devueltos' && estado === 'devuelto') {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}
+else
+{
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No tienes préstamos registrados</h3>
+        <p>Cuando realices tu primer préstamo, aparecerá aquí en tu historial.</p>
+        <a asp-controller="Libroes" asp-action="Index" class="btn-custom btn-primary-custom" style="margin-top: 20px; display: inline-block; padding: 12px 30px; background: #007bff; color: white; border-radius: 8px; text-decoration: none;">
+            📚 Explorar catálogo
+        </a>
+    </div>
+}
+
+<div style="text-align: center; margin-top: 30px;">
+    <a asp-controller="Home" asp-action="IndexLog" style="color: #007bff; text-decoration: none; font-weight: 500;">
+        ⬅️ Volver a mi área personal
+    </a>
+</div>

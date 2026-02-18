@@ -1,48 +1,125 @@
 ﻿@{
     ViewData["Title"] = "Bienvenida";
 }
-    <main>
-        <h1>Bienvenido @User.Identity.Name</h1> 
 
-        <!-- Contenedor para acciones con Libros -->
-        <div class="contenedor_general">
-            <div class="contenedor">
-                <h1>Libros</h1>
-                <div class="tarjeta">
-                    <a asp-controller="Libroes" asp-action="Create"><p>Añadir libro</p></a>
-                </div>
-                <div class="tarjeta">
-                    <a asp-controller="Libroes" asp-action="Index"><p>Lista de libros</p></a>
-            </div>
+<style>
+    .contenedor_general {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        justify-content: center;
+    }
 
-            <!-- Contenedor para acciones con Autores -->
-            <div class="contenedor">
-                <h1>Autores</h1>
-                <div class="tarjeta">
-                    <a asp-controller="Autors" asp-action="Create"><p>Añadir autor</p></a>
-                </div>
-                <div class="tarjeta">
-                   <a asp-controller="Autors" asp-action="Index"><p>Lista de autores</p></a>
-                </div>
+    .contenedor {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        min-width: 280px;
+        max-width: 320px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contenedor:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .contenedor h1 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 10px;
+    }
+
+    .tarjeta {
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin: 10px 0;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+    }
+
+    .tarjeta:hover {
+        background: #007bff;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .tarjeta a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .tarjeta:hover a {
+        color: white;
+    }
+
+    .tarjeta p {
+        margin: 0;
+    }
+
+    main h1 {
+        text-align: center;
+        color: #333;
+        margin: 30px 0;
+        font-size: 2rem;
+    }
+</style>
+
+<main>
+    <h1>Bienvenido @User.Identity.Name</h1> 
+
+    <!-- Contenedor para acciones con Libros -->
+    <div class="contenedor_general">
+        <div class="contenedor">
+            <h1>📚 Libros</h1>
+            <div class="tarjeta">
+                <a asp-controller="Libroes" asp-action="Create"><p>➕ Añadir libro</p></a>
             </div>
-            <!-- Contenedor para acciones con Usuarios -->
-            <div class="contenedor">
-                <h1>Usuarios</h1>
-               <div class="tarjeta">
-                  <a asp-controller="Admin" asp-action="CrearUsuario"><p>Crear usuario</p></a>
-                </div>
-                <div class="tarjeta">
-                    <a asp-controller="Admin" asp-action="Usuarios"><p>Lista Usuarios</p></a>
-                </div>
+            <div class="tarjeta">
+                <a asp-controller="Libroes" asp-action="Index"><p>📖 Lista de libros</p></a>
             </div>
-            <!-- Contenedor para acciones Prestamos -->
-            <div class="contenedor">
-                <h1>Prestamos</h1>
-                <div class="tarjeta">
-                    <a asp-controller="Prestamos" asp-action="Crear"><p>Realizar prestamo</p></a>
-                </div>
-            </div>
-            <!---->
-               
         </div>
-    </main>
+
+        <!-- Contenedor para acciones con Autores -->
+        <div class="contenedor">
+            <h1>✍️ Autores</h1>
+            <div class="tarjeta">
+                <a asp-controller="Autors" asp-action="Create"><p>➕ Añadir autor</p></a>
+            </div>
+            <div class="tarjeta">
+               <a asp-controller="Autors" asp-action="Index"><p>👥 Lista de autores</p></a>
+            </div>
+        </div>
+
+        <!-- Contenedor para acciones con Usuarios -->
+        <div class="contenedor">
+            <h1>👤 Usuarios</h1>
+           <div class="tarjeta">
+              <a asp-controller="Admin" asp-action="CrearUsuario"><p>➕ Crear usuario</p></a>
+            </div>
+            <div class="tarjeta">
+                <a asp-controller="Admin" asp-action="Usuarios"><p>📋 Lista Usuarios</p></a>
+            </div>
+        </div>
+
+        <!-- Contenedor para acciones Prestamos -->
+        <div class="contenedor">
+            <h1>📤 Préstamos</h1>
+            <div class="tarjeta">
+                <a asp-controller="Prestamos" asp-action="Crear"><p>➕ Realizar préstamo</p></a>
+            </div>
+            <div class="tarjeta">
+                <a asp-controller="Prestamos" asp-action="Index"><p>📋 Lista de préstamos</p></a>
+            </div>
+        </div>
+    </div>
+</main>

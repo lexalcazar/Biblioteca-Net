@@ -1,0 +1,69 @@
+﻿@model List<Biblioteca.Models.ViewModels.PrestamoListaVm>
+
+
+
+@{
+    ViewData["Title"] = "Préstamos";
+}
+
+<h2>Listado de préstamos</h2>
+
+@if (TempData["ok"] != null)
+{
+    <div class="alert alert-success">@TempData["ok"]</div>
+}
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger">@TempData["error"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p>No hay préstamos.</p>
+}
+else
+{
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Usuario</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Libro</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Inicio</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Fin</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Renov.</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Estado</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.EmailUsuario</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.LibroTitulo</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaInicio.ToShortDateString()</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaFin.ToShortDateString()</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Renovaciones</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">
+                        @(p.Devuelto ? "Devuelto" : "Activo")
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">
+                        @if (!p.Devuelto)
+                        {
+                            <form asp-action="Devolver" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-danger">Devolver</button>
+                            </form>
+                            <form asp-action="RenovarBibliotecario" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@p.Id" />
+                                <button type="submit" class="btn btn-sm btn-warning">Renovar</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,21 +1,109 @@
 ﻿@{
     ViewData["Title"] = "Bienvenida";
 }
+
+<style>
+    .contenedor_general {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        justify-content: center;
+    }
+
+    .contenedor {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        min-width: 280px;
+        max-width: 320px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contenedor:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .contenedor h1 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 10px;
+    }
+
+    .tarjeta {
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin: 10px 0;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+    }
+
+    .tarjeta:hover {
+        background: #007bff;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .tarjeta a {
+        display: block;
+        padding: 15px;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .tarjeta:hover a {
+        color: white;
+    }
+
+    .tarjeta p {
+        margin: 0;
+    }
+
+    main h1 {
+        text-align: center;
+        color: #333;
+        margin: 30px 0;
+        font-size: 2rem;
+    }
+
+    .intro-text {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        padding: 0 20px;
+    }
+</style>
+
 <main>
-        <h1>Bienvenido @User.Identity.Name</h1> 
-    <p>Esta es la página de bienvenida. Desde aquí puedes acceder a las diferentes secciones de la aplicación.</p>
-    <!-- Contenedor para acciones con Usuarios -->
-    <div class="contenedor">
-        <h1>Mis prestamos</h1>
-        <div class="tarjeta">
-            <a asp-controller="Prestamos" asp-action="MisPrestamos"><p>Mis prestamos</p></a>
+    <h1>Bienvenido @User.Identity.Name</h1> 
+    <p class="intro-text">Esta es la página de bienvenida. Desde aquí puedes acceder a las diferentes secciones de la aplicación.</p>
+
+    <div class="contenedor_general">
+        <!-- Contenedor para Mis Préstamos Activos -->
+        <div class="contenedor">
+            <h1>📤 Mis Préstamos</h1>
+            <div class="tarjeta">
+                <a asp-controller="Prestamos" asp-action="MisPrestamos"><p>📋 Préstamos activos</p></a>
+            </div>
+            <div class="tarjeta">
+                <a asp-controller="Prestamos" asp-action="HistorialPrestamos"><p>📚 Historial completo</p></a>
+            </div>
+        </div>
+
+        <!-- Contenedor para Catálogo -->
+        <div class="contenedor">
+            <h1>📚 Catálogo</h1>
+            <div class="tarjeta">
+                <a asp-controller="Libroes" asp-action="Index"><p>🔍 Explorar catálogo</p></a>
+            </div>
         </div>
     </div>
-    <!-- Contenedor para acciones con Usuarios -->
-    <div class="contenedor">
-        <h1>Catálogo</h1>
-        <div class="tarjeta">
-            <a asp-controller="Libroes" asp-action="Index"><p>Ver Catálogo</p></a>
-        </div>
-    </div>
-</main> 
+</main>

@@ -1,33 +1,145 @@
 ﻿@model Biblioteca.Models.Libro
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Detalles del Libro";
 }
 
-<!DOCTYPE html>
+<style>
+    .details-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
+    .details-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        transition: box-shadow 0.3s ease;
+    }
 
-<div>
-    <h4>Libro</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Titulo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Titulo)
-        </dd>
-            <dt class="col-sm-2">Autores</dt>
-            <dd class="col-sm-10">
+    .details-card:hover {
+        box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .details-header {
+        text-align: center;
+        color: #007bff;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 15px;
+    }
+
+    .detail-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: #495057;
+        min-width: 150px;
+        font-size: 1.1rem;
+    }
+
+    .detail-value {
+        color: #212529;
+        flex: 1;
+        font-size: 1.1rem;
+    }
+
+    .autores-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .autores-list li {
+        background: #f8f9fa;
+        padding: 8px 15px;
+        margin: 5px 0;
+        border-radius: 5px;
+        border-left: 3px solid #007bff;
+    }
+
+    .no-autores {
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+        justify-content: center;
+    }
+
+    .btn-custom {
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-edit {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-back {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-back:hover {
+        background: #545b62;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    }
+
+    .icon {
+        margin-right: 8px;
+    }
+</style>
+
+<div class="details-container">
+    <div class="details-card">
+        <h1 class="details-header">📖 Detalles del Libro</h1>
+
+        <div class="detail-row">
+            <div class="detail-label">
+                <span class="icon">📚</span>
+                @Html.DisplayNameFor(model => model.Titulo):
+            </div>
+            <div class="detail-value">
+                <strong>@Html.DisplayFor(model => model.Titulo)</strong>
+            </div>
+        </div>
+
+        <div class="detail-row">
+            <div class="detail-label">
+                <span class="icon">✍️</span>
+                Autores:
+            </div>
+            <div class="detail-value">
                 @if (Model.Autores != null && Model.Autores.Any())
                 {
-                    <ul>
+                    <ul class="autores-list">
                         @foreach (var a in Model.Autores)
                         {
                             <li>@a.Nombre</li>
@@ -36,27 +148,41 @@
                 }
                 else
                 {
-                    <span>Sin autores asignados</span>
+                    <span class="no-autores">Sin autores asignados</span>
                 }
-            </dd>
+            </div>
+        </div>
 
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Isbn)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Isbn)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Copias)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Copias)
-        </dd>
-    </dl>
+        <div class="detail-row">
+            <div class="detail-label">
+                <span class="icon">🔢</span>
+                @Html.DisplayNameFor(model => model.Isbn):
+            </div>
+            <div class="detail-value">
+                @Html.DisplayFor(model => model.Isbn)
+            </div>
+        </div>
+
+        <div class="detail-row">
+            <div class="detail-label">
+                <span class="icon">📦</span>
+                @Html.DisplayNameFor(model => model.Copias):
+            </div>
+            <div class="detail-value">
+                <strong>@Html.DisplayFor(model => model.Copias)</strong> copias disponibles
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            @if (User.IsInRole("Bibliotecario"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-custom btn-edit">
+                    ✏️ Editar
+                </a>
+            }
+            <a asp-action="Index" class="btn-custom btn-back">
+                ⬅️ Volver al catálogo
+            </a>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |
-    <a asp-action="Index">Volver a la listat</a>
-</div>
-</body>
-</html>

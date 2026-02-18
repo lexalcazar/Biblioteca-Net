@@ -2,37 +2,44 @@
 
 <h2>Mis préstamos</h2>
 
+@if (TempData["ok"] != null)
+{
+    <div class="alert alert-success">@TempData["ok"]</div>
+}
+@if (TempData["error"] != null)
+{
+    <div class="alert alert-danger">@TempData["error"]</div>
+}
+
 @if (!Model.Any())
 {
     <p>No tienes préstamos activos.</p>
 }
 else
 {
-    <table class="table">
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
         <thead>
             <tr>
-                <th>LibroId</th>
-                <th>Titulo</th>
-                <th>Fecha inicio</th>
-                <th>Fecha fin</th>
-                <th>Renovaciones</th>
-                <th></th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Título</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Fecha inicio</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Fecha fin</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Renovaciones</th>
+                <th style="border: 1px solid #dee2e6; padding: 8px;">Acciones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var p in Model)
             {
                 <tr>
-                    <td>@p.LibroId</td>
-                    <td>@p.Libro.Titulo</td>
-                    <td>@p.FechaInicio.ToShortDateString()</td>
-                    <td>@p.FechaFin</td>
-                    <td>@p.Renovaciones</td>
-                    <td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Libro.Titulo</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaInicio.ToShortDateString()</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaFin.ToShortDateString()</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Renovaciones</td>
+                    <td style="border: 1px solid #dee2e6; padding: 8px;">
                         <form asp-action="Renovar" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@p.Id" />
-                            <button type="submit">Renovar</button>
+                            <button type="submit" class="btn btn-sm btn-primary">Renovar 15 días</button>
                         </form>
                     </td>
                 </tr>

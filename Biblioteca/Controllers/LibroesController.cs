@@ -99,37 +99,68 @@ namespace Biblioteca.Controllers
         {
             if (id == null) return NotFound();
 
-            var libro = await _context.Libros.FindAsync(id);
+            var libro = await _context.Libros
+                .Include(l => l.Autores)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
             if (libro == null) return NotFound();
 
-            return View(libro);
+            var vm = new LibroEditVm
+            {
+                Id = libro.Id,
+                Titulo = libro.Titulo,
+                Isbn = libro.Isbn,
+                Copias = libro.Copias,
+                AutoresSeleccionados = libro.Autores.Select(a => a.Id).ToList(),
+                Autores = _context.Autores
+                    .Select(a => new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = a.Nombre
+                    }).ToList()
+            };
+
+            return View(vm);
         }
+
 
         // POST: Libroes/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Titulo,Isbn,Copias")] Libro libro)
+        public async Task<IActionResult> Edit(LibroEditVm vm)
         {
-            if (id != libro.Id) return NotFound();
-
             if (!ModelState.IsValid)
-                return View(libro);
+            {
+                vm.Autores = _context.Autores
+                    .Select(a => new SelectListItem
+                    {
+                        Value = a.Id.ToString(),
+                        Text = a.Nombre
+                    }).ToList();
 
-            try
-            {
-                _context.Update(libro);
-                await _context.SaveChangesAsync();
+                return View(vm);
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Libros.Any(e => e.Id == libro.Id))
-                    return NotFound();
-                else
-                    throw;
-            }
+
+            var libro = await _context.Libros
+                .Include(l => l.Autores)
+                .FirstOrDefaultAsync(l => l.Id == vm.Id);
+
+            if (libro == null) return NotFound();
+
+            libro.Titulo = vm.Titulo;
+            libro.Isbn = vm.Isbn;
+            libro.Copias = vm.Copias;
+
+            // actualizar autores
+            libro.Autores = _context.Autores
+                .Where(a => vm.AutoresSeleccionados.Contains(a.Id))
+                .ToList();
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Libroes/Delete/5
         public async Task<IActionResult> Delete(int? id)

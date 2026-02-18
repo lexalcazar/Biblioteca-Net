@@ -9,6 +9,7 @@ using Biblioteca.Data;
 using Biblioteca.Models;
 using Biblioteca.Models.ViewModels;
 using System.Linq;
+using Biblioteca.Models.ViewModels;
 
 
 
@@ -37,7 +38,127 @@ namespace Biblioteca.Controllers
             return View(prestamos);
         }
 
+        // Usuario: ve su historial completo de préstamos
+        public async Task<IActionResult> HistorialPrestamos()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var prestamos = await _context.Prestamos
+                .Include(p => p.Libro)
+                .Where(p => p.UserId == userId)
+                .OrderByDescending(p => p.FechaInicio)
+                .ToListAsync();
+            return View(prestamos);
+        }
+
+        //--- VER TODOS LOS PRESTAMOS SOLO BIBLIOTECARIO ---
+        [Authorize(Roles = "Bibliotecario")]
+        public async Task<IActionResult> Index()
+        {
+            var prestamos = await _context.Prestamos
+                .Include(p => p.Libro)
+                .OrderByDescending(p => p.FechaInicio)
+                .ToListAsync();
+
+            // Traer emails de usuarios (rápido y sin liarnos con joins raros)
+            var userIds = prestamos.Select(p => p.UserId).Distinct().ToList();
+            var users = await _userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.Email })
+                .ToListAsync();
+
+            var emailPorId = users.ToDictionary(u => u.Id, u => u.Email ?? "");
+
+            var vm = prestamos.Select(p => new PrestamoListaVm
+            {
+                Id = p.Id,
+                LibroTitulo = p.Libro != null ? p.Libro.Titulo : "",
+                EmailUsuario = emailPorId.ContainsKey(p.UserId) ? emailPorId[p.UserId] : p.UserId,
+                FechaInicio = p.FechaInicio,
+                FechaFin = p.FechaFin,
+                Renovaciones = p.Renovaciones,
+                Devuelto = p.Devuelto
+            }).ToList();
+
+            return View(vm);
+        }
+
+      
+        //------- DEVOLVER PRÉSTAMO (BIBLIOTECARIO) --------
+        [Authorize(Roles = "Bibliotecario")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Devolver(int id)
+        {
+            var prestamo = await _context.Prestamos
+                .Include(p => p.Libro)
+                .FirstOrDefaultAsync(p => p.Id == id);
+            if (prestamo == null) return NotFound();
+
+            prestamo.Devuelto = true;
+
+            // Aumentar copias al devolver
+            if (prestamo.Libro != null)
+            {
+                prestamo.Libro.Copias++;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        //------- RENOVAR PRÉSTAMO (USUARIO) --------
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Renovar(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var prestamo = await _context.Prestamos
+                .FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId && !p.Devuelto);
+
+            if (prestamo == null)
+            {
+                TempData["error"] = "No se pudo encontrar el préstamo o ya fue devuelto.";
+                return RedirectToAction(nameof(MisPrestamos));
+            }
+
+            // Extender fecha fin por 15 días
+            prestamo.FechaFin = prestamo.FechaFin.AddDays(15);
+            prestamo.Renovaciones++;
+
+            await _context.SaveChangesAsync();
+
+            TempData["ok"] = "Préstamo renovado por 15 días más.";
+            return RedirectToAction(nameof(MisPrestamos));
+        }
+
+        //------- RENOVAR PRÉSTAMO (BIBLIOTECARIO) --------
+        [Authorize(Roles = "Bibliotecario")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RenovarBibliotecario(int id)
+        {
+            var prestamo = await _context.Prestamos
+                .FirstOrDefaultAsync(p => p.Id == id && !p.Devuelto);
+
+            if (prestamo == null)
+            {
+                TempData["error"] = "No se pudo encontrar el préstamo o ya fue devuelto.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Extender fecha fin por 15 días
+            prestamo.FechaFin = prestamo.FechaFin.AddDays(15);
+            prestamo.Renovaciones++;
+
+            await _context.SaveChangesAsync();
+
+            TempData["ok"] = "Préstamo renovado por 15 días más.";
+            return RedirectToAction(nameof(Index));
+        }
+
         // ----------- CREAR PRÉSTAMO (SOLO BIBLIOTECARIO) -----------
+        [Authorize(Roles = "Bibliotecario")]
         public async Task<IActionResult> Crear()
         {
             var vm = new PrestamoCreateVm
@@ -97,10 +218,7 @@ namespace Biblioteca.Controllers
             }
 
             // Comprobar copias disponibles
-            var prestamosActivos = await _context.Prestamos
-                .CountAsync(p => p.LibroId == vm.LibroId && !p.Devuelto);
-
-            if (prestamosActivos >= libro.Copias)
+            if (libro.Copias <= 0)
             {
                 ModelState.AddModelError("", "No hay copias disponibles de este libro.");
                 await RecargarLibros();
@@ -117,6 +235,9 @@ namespace Biblioteca.Controllers
                 Renovaciones = 0,
                 Devuelto = false
             };
+
+            // Actualizar copias: decrementar al prestar
+            libro.Copias--;
 
             _context.Prestamos.Add(prestamo);
             await _context.SaveChangesAsync();
