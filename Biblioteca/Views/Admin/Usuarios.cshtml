@@ -1,34 +1,164 @@
 ﻿@model List<Biblioteca.Controllers.UsuarioListaVm>
 
 @{
-    ViewData["Title"] = "Usuarios";
+    ViewData["Title"] = "Gestión de Usuarios";
 }
 
-<h2>Usuarios</h2>
+<style>
+    .usuarios-header {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .usuarios-title {
+        color: #007bff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .usuarios-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .add-button-section {
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .btn-add {
+        background: #28a745;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .btn-add:hover {
+        background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+        color: white;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 200px;
+        margin: 20px auto;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 1rem;
+        margin-top: 5px;
+    }
+
+    .usuario-row {
+        transition: background-color 0.2s ease;
+    }
+
+    .usuario-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .user-id {
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="usuarios-header">
+    <h1 class="usuarios-title">👥 Gestión de Usuarios</h1>
+    <p class="usuarios-subtitle">Administra los usuarios registrados en la biblioteca</p>
+</div>
+
+<div class="add-button-section">
+    <a asp-controller="Admin" asp-action="CrearUsuario" class="btn-add">➕ Crear Nuevo Usuario</a>
+</div>
 
 @if (!Model.Any())
 {
-    <p>No hay usuarios.</p>
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No hay usuarios registrados</h3>
+        <p>Comienza creando el primer usuario de la biblioteca.</p>
+        <a asp-controller="Admin" asp-action="CrearUsuario" class="btn-add" style="margin-top: 20px;">
+            ➕ Crear Primer Usuario
+        </a>
+    </div>
 }
 else
 {
-    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
-        <thead>
+    var totalUsuarios = Model.Count;
+
+    <div class="stat-card">
+        <div class="stat-number">@totalUsuarios</div>
+        <div class="stat-label">@(totalUsuarios == 1 ? "Usuario registrado" : "Usuarios registrados")</div>
+    </div>
+
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6; margin-top: 30px;">
+        <thead style="background-color: #f8f9fa;">
             <tr>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Email</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">UserName</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Id</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">
+                    📧 Email
+                </th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">
+                    👤 Nombre de Usuario
+                </th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">
+                    🔑 ID de Usuario
+                </th>
             </tr>
         </thead>
         <tbody>
             @foreach (var u in Model)
             {
-                <tr>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@u.Email</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@u.UserName</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px; font-size:12px">@u.Id</td>
+                <tr class="usuario-row">
+                    <td style="border: 1px solid #dee2e6; padding: 12px;">
+                        <strong>@u.Email</strong>
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 12px;">
+                        @u.UserName
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 12px;">
+                        <span class="user-id">@u.Id</span>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 }
+
+<div style="text-align: center; margin-top: 30px;">
+    <a asp-controller="Home" asp-action="Bienvenida" style="color: #007bff; text-decoration: none; font-weight: 500;">
+        ⬅️ Volver al panel de control
+    </a>
+</div>

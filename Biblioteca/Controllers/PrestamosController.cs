@@ -52,7 +52,7 @@ namespace Biblioteca.Controllers
 
         //--- VER TODOS LOS PRESTAMOS SOLO BIBLIOTECARIO ---
         [Authorize(Roles = "Bibliotecario")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string buscarEmail)
         {
             var prestamos = await _context.Prestamos
                 .Include(p => p.Libro)
@@ -78,6 +78,13 @@ namespace Biblioteca.Controllers
                 Renovaciones = p.Renovaciones,
                 Devuelto = p.Devuelto
             }).ToList();
+
+            // Filtrar por email si se proporcionó un término de búsqueda
+            if (!string.IsNullOrWhiteSpace(buscarEmail))
+            {
+                vm = vm.Where(p => p.EmailUsuario.Contains(buscarEmail, StringComparison.OrdinalIgnoreCase)).ToList();
+                ViewBag.BuscarEmail = buscarEmail;
+            }
 
             return View(vm);
         }
@@ -213,6 +220,17 @@ namespace Biblioteca.Controllers
             if (usuario == null)
             {
                 ModelState.AddModelError("", "No existe ningún usuario con ese email.");
+                await RecargarLibros();
+                return View(vm);
+            }
+
+            // Validar límite de préstamos activos por usuario (máximo 3)
+            var prestamosActivosUsuario = await _context.Prestamos
+                .CountAsync(p => p.UserId == usuario.Id && !p.Devuelto);
+
+            if (prestamosActivosUsuario >= 3)
+            {
+                ModelState.AddModelError("", $"El usuario {vm.EmailUsuario} ya tiene {prestamosActivosUsuario} préstamos activos. El límite máximo es de 3 préstamos simultáneos.");
                 await RecargarLibros();
                 return View(vm);
             }

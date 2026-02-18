@@ -1,69 +1,461 @@
 ﻿@model List<Biblioteca.Models.ViewModels.PrestamoListaVm>
 
-
-
 @{
-    ViewData["Title"] = "Préstamos";
+    ViewData["Title"] = "Gestión de Préstamos";
 }
 
-<h2>Listado de préstamos</h2>
+<style>
+    .prestamos-header {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .prestamos-title {
+        color: #007bff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .prestamos-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .alert-custom {
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        font-weight: 500;
+    }
+
+    .alert-success-custom {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger-custom {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    .stats-cards {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        min-width: 150px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .search-section {
+        background: #e7f3ff;
+        border: 1px solid #b3d9ff;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        min-width: 300px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .btn-search {
+        padding: 10px 25px;
+        border-radius: 6px;
+        background: #007bff;
+        color: white;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-clear {
+        padding: 10px 25px;
+        border-radius: 6px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .btn-clear:hover {
+        background: #545b62;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+        color: white;
+    }
+
+    .search-result-badge {
+        background: #007bff;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 6px;
+        font-weight: 500;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-filter {
+        padding: 8px 20px;
+        border-radius: 6px;
+        border: 2px solid #007bff;
+        background: white;
+        color: #007bff;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-filter:hover, .btn-filter.active {
+        background: #007bff;
+        color: white;
+    }
+
+    .prestamo-row {
+        transition: background-color 0.2s ease;
+    }
+
+    .prestamo-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    .prestamo-row.row-devuelto {
+        background-color: #e8f5e9;
+    }
+
+    .prestamo-row.row-activo {
+        background-color: #fff3e0;
+    }
+
+    .badge-activo {
+        background: #ff9800;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-devuelto {
+        background: #4caf50;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .badge-renovado {
+        background: #2196f3;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    .btn-action {
+        padding: 6px 15px;
+        border-radius: 6px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+        margin: 2px;
+    }
+
+    .btn-devolver {
+        background: #4caf50;
+        color: white;
+    }
+
+    .btn-devolver:hover {
+        background: #45a049;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+    }
+
+    .btn-renovar {
+        background: #2196f3;
+        color: white;
+    }
+
+    .btn-renovar:hover {
+        background: #0b7dda;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="prestamos-header">
+    <h1 class="prestamos-title">📋 Gestión de Préstamos</h1>
+    <p class="prestamos-subtitle">Administra todos los préstamos de la biblioteca</p>
+</div>
 
 @if (TempData["ok"] != null)
 {
-    <div class="alert alert-success">@TempData["ok"]</div>
+    <div class="alert-custom alert-success-custom">✅ @TempData["ok"]</div>
 }
 @if (TempData["error"] != null)
 {
-    <div class="alert alert-danger">@TempData["error"]</div>
+    <div class="alert-custom alert-danger-custom">❌ @TempData["error"]</div>
 }
+
+<!-- Buscador de préstamos por email de usuario -->
+<div class="search-section">
+    <h3 style="margin-bottom: 15px; color: #007bff;">🔍 Buscar Préstamos por Usuario</h3>
+    <form asp-action="Index" method="get" class="search-form">
+        <input type="text" 
+               name="buscarEmail" 
+               class="search-input" 
+               placeholder="Ingresa el email del usuario..." 
+               value="@ViewBag.BuscarEmail" />
+        <button type="submit" class="btn-search">🔍 Buscar</button>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.BuscarEmail))
+        {
+            <a asp-action="Index" class="btn-clear">✖ Limpiar búsqueda</a>
+        }
+    </form>
+    @if (!string.IsNullOrWhiteSpace(ViewBag.BuscarEmail))
+    {
+        <div class="search-result-badge">
+            📧 Mostrando préstamos de: <strong>@ViewBag.BuscarEmail</strong>
+        </div>
+    }
+</div>
 
 @if (!Model.Any())
 {
-    <p>No hay préstamos.</p>
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.BuscarEmail))
+        {
+            <h3>No se encontraron préstamos para este usuario</h3>
+            <p>No hay préstamos registrados para el email <strong>@ViewBag.BuscarEmail</strong></p>
+            <a asp-action="Index" class="btn-clear" style="margin-top: 20px;">Ver todos los préstamos</a>
+        }
+        else
+        {
+            <h3>No hay préstamos registrados</h3>
+            <p>Cuando se realice el primer préstamo, aparecerá aquí en el listado.</p>
+        }
+    </div>
 }
 else
 {
+    var totalPrestamos = Model.Count;
+    var prestamosActivos = Model.Count(p => !p.Devuelto);
+    var prestamosDevueltos = Model.Count(p => p.Devuelto);
+    var totalRenovaciones = Model.Sum(p => p.Renovaciones);
+
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-number">@totalPrestamos</div>
+            <div class="stat-label">Total de préstamos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #ff9800;">@prestamosActivos</div>
+            <div class="stat-label">Préstamos activos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #4caf50;">@prestamosDevueltos</div>
+            <div class="stat-label">Préstamos devueltos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" style="color: #2196f3;">@totalRenovaciones</div>
+            <div class="stat-label">Renovaciones totales</div>
+        </div>
+    </div>
+
+    <div class="filter-section">
+        <p style="margin-bottom: 10px; font-weight: 500;">Filtrar por estado:</p>
+        <div class="filter-buttons">
+            <button class="btn-filter active" onclick="filtrarPrestamos('todos')">📋 Todos</button>
+            <button class="btn-filter" onclick="filtrarPrestamos('activos')">🔶 Activos</button>
+            <button class="btn-filter" onclick="filtrarPrestamos('devueltos')">✅ Devueltos</button>
+        </div>
+    </div>
+
     <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
-        <thead>
+        <thead style="background-color: #f8f9fa;">
             <tr>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Usuario</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Libro</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Inicio</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Fin</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Renov.</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Estado</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;"></th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">👤 Usuario</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📖 Libro</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Inicio</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Fin</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">🔄 Renov.</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">Estado</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">Acciones</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="tablaPrestamos">
             @foreach (var p in Model)
             {
-                <tr>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.EmailUsuario</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.LibroTitulo</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaInicio.ToShortDateString()</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaFin.ToShortDateString()</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Renovaciones</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">
-                        @(p.Devuelto ? "Devuelto" : "Activo")
+                <tr class="prestamo-row @(p.Devuelto ? "row-devuelto" : "row-activo")" 
+                    data-estado="@(p.Devuelto ? "devuelto" : "activo")">
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        <strong>@p.EmailUsuario</strong>
                     </td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.LibroTitulo
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaInicio.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaFin.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                        @p.Renovaciones
+                        @if (p.Renovaciones > 0)
+                        {
+                            <span class="badge-renovado">@p.Renovaciones vez@(p.Renovaciones > 1 ? "es" : "")</span>
+                        }
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                        @if (p.Devuelto)
+                        {
+                            <span class="badge-devuelto">✓ Devuelto</span>
+                        }
+                        else
+                        {
+                            <span class="badge-activo">● Activo</span>
+                        }
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
                         @if (!p.Devuelto)
                         {
                             <form asp-action="Devolver" method="post" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@p.Id" />
-                                <button type="submit" class="btn btn-sm btn-danger">Devolver</button>
+                                <button type="submit" class="btn-action btn-devolver">✓ Devolver</button>
                             </form>
                             <form asp-action="RenovarBibliotecario" method="post" style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@p.Id" />
-                                <button type="submit" class="btn btn-sm btn-warning">Renovar</button>
+                                <button type="submit" class="btn-action btn-renovar">🔄 Renovar</button>
                             </form>
+                        }
+                        else
+                        {
+                            <span style="color: #6c757d; font-style: italic;">Sin acciones</span>
                         }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+
+    <script>
+        function filtrarPrestamos(filtro) {
+            // Actualizar botones activos
+            document.querySelectorAll('.btn-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filtrar filas
+            const filas = document.querySelectorAll('.prestamo-row');
+            filas.forEach(fila => {
+                const estado = fila.getAttribute('data-estado');
+                if (filtro === 'todos') {
+                    fila.style.display = '';
+                } else if (filtro === 'activos' && estado === 'activo') {
+                    fila.style.display = '';
+                } else if (filtro === 'devueltos' && estado === 'devuelto') {
+                    fila.style.display = '';
+                } else {
+                    fila.style.display = 'none';
+                }
+            });
+        }
+    </script>
 }
+
+<div style="text-align: center; margin-top: 30px;">
+    <a asp-controller="Home" asp-action="Bienvenida" style="color: #007bff; text-decoration: none; font-weight: 500;">
+        ⬅️ Volver al panel de control
+    </a>
+</div>

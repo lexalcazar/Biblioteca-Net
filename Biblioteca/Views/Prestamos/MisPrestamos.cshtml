@@ -1,45 +1,236 @@
 ﻿@model List<Biblioteca.Models.Prestamo>
 
-<h2>Mis préstamos</h2>
+@{
+    ViewData["Title"] = "Mis Préstamos Activos";
+}
+
+<style>
+    .prestamos-header {
+        text-align: center;
+        margin: 30px 0;
+    }
+
+    .prestamos-title {
+        color: #007bff;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .prestamos-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .alert-custom {
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        font-weight: 500;
+    }
+
+    .alert-success-custom {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger-custom {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+
+    .limit-info {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px auto;
+        max-width: 400px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .limit-progress {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .limit-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .limit-number.ok {
+        color: #28a745;
+    }
+
+    .limit-number.warning {
+        color: #ffc107;
+    }
+
+    .limit-number.danger {
+        color: #dc3545;
+    }
+
+    .limit-bar {
+        width: 200px;
+        height: 20px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .limit-bar-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+        border-radius: 10px;
+    }
+
+    .limit-bar-fill.ok {
+        background: #28a745;
+    }
+
+    .limit-bar-fill.warning {
+        background: #ffc107;
+    }
+
+    .limit-bar-fill.danger {
+        background: #dc3545;
+    }
+
+    .prestamo-row {
+        transition: background-color 0.2s ease;
+        background-color: #fff3e0;
+    }
+
+    .prestamo-row:hover {
+        background-color: #ffe0b2;
+    }
+
+    .btn-renovar {
+        background: #2196f3;
+        color: white;
+        padding: 6px 15px;
+        border-radius: 6px;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+
+    .btn-renovar:hover {
+        background: #0b7dda;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="prestamos-header">
+    <h1 class="prestamos-title">📤 Mis Préstamos Activos</h1>
+    <p class="prestamos-subtitle">Gestiona tus préstamos en curso</p>
+</div>
 
 @if (TempData["ok"] != null)
 {
-    <div class="alert alert-success">@TempData["ok"]</div>
+    <div class="alert-custom alert-success-custom">✅ @TempData["ok"]</div>
 }
 @if (TempData["error"] != null)
 {
-    <div class="alert alert-danger">@TempData["error"]</div>
+    <div class="alert-custom alert-danger-custom">❌ @TempData["error"]</div>
 }
+
+@{
+    var totalPrestamos = Model.Count;
+    var limiteMaximo = 3;
+    var porcentaje = (totalPrestamos * 100.0) / limiteMaximo;
+    var estadoClase = totalPrestamos <= 1 ? "ok" : (totalPrestamos == 2 ? "warning" : "danger");
+}
+
+<div class="limit-info">
+    <h3 style="color: #007bff; margin-bottom: 15px;">📊 Estado de tus préstamos</h3>
+    <div class="limit-progress">
+        <div class="limit-number @estadoClase">@totalPrestamos</div>
+        <span style="font-size: 1.2rem; color: #6c757d;">/</span>
+        <div style="font-size: 1.5rem; color: #6c757d;">@limiteMaximo</div>
+    </div>
+    <div class="limit-bar" style="margin: 15px auto;">
+        <div class="limit-bar-fill @estadoClase" style="width: @porcentaje%"></div>
+    </div>
+    <p style="color: #6c757d; margin: 10px 0;">
+        @if (totalPrestamos == 0)
+        {
+            <span>Puedes solicitar hasta <strong>3 préstamos</strong> simultáneos</span>
+        }
+        else if (totalPrestamos < 3)
+        {
+            <span>Te quedan <strong>@(limiteMaximo - totalPrestamos) préstamos</strong> disponibles</span>
+        }
+        else
+        {
+            <span style="color: #dc3545;"><strong>⚠️ Has alcanzado el límite máximo</strong></span>
+        }
+    </p>
+</div>
 
 @if (!Model.Any())
 {
-    <p>No tienes préstamos activos.</p>
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No tienes préstamos activos</h3>
+        <p>Puedes solicitar hasta 3 libros en préstamo simultáneamente.</p>
+        <a asp-controller="Libroes" asp-action="Index" style="margin-top: 20px; display: inline-block; padding: 12px 30px; background: #007bff; color: white; border-radius: 8px; text-decoration: none;">
+            📚 Explorar catálogo
+        </a>
+    </div>
 }
 else
 {
-    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6;">
-        <thead>
+    <table class="table" style="border-collapse: collapse; border: 1px solid #dee2e6; margin-top: 30px;">
+        <thead style="background-color: #f8f9fa;">
             <tr>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Título</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Fecha inicio</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Fecha fin</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Renovaciones</th>
-                <th style="border: 1px solid #dee2e6; padding: 8px;">Acciones</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📖 Título</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Fecha inicio</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">📅 Fecha fin</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">🔄 Renovaciones</th>
+                <th style="border: 1px solid #dee2e6; padding: 12px;">Acciones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var p in Model)
             {
-                <tr>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Libro.Titulo</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaInicio.ToShortDateString()</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.FechaFin.ToShortDateString()</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">@p.Renovaciones</td>
-                    <td style="border: 1px solid #dee2e6; padding: 8px;">
+                <tr class="prestamo-row">
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        <strong>@p.Libro.Titulo</strong>
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaInicio.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px;">
+                        @p.FechaFin.ToShortDateString()
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
+                        @p.Renovaciones
+                    </td>
+                    <td style="border: 1px solid #dee2e6; padding: 10px; text-align: center;">
                         <form asp-action="Renovar" method="post">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@p.Id" />
-                            <button type="submit" class="btn btn-sm btn-primary">Renovar 15 días</button>
+                            <button type="submit" class="btn-renovar">🔄 Renovar 15 días</button>
                         </form>
                     </td>
                 </tr>
@@ -47,3 +238,9 @@ else
         </tbody>
     </table>
 }
+
+<div style="text-align: center; margin-top: 30px;">
+    <a asp-controller="Home" asp-action="IndexLog" style="color: #007bff; text-decoration: none; font-weight: 500;">
+        ⬅️ Volver a mi área personal
+    </a>
+</div>
