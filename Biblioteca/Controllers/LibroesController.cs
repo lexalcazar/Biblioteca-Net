@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace Biblioteca.Controllers
 {
     // Solo el bibliotecario puede gestionar libros
-    [Authorize(Roles = "Bibliotecario")]
+    
     public class LibroesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -41,6 +41,7 @@ namespace Biblioteca.Controllers
 
             return View(libro);
         }
+        [Authorize(Roles = "Bibliotecario")]
 
         // GET: Libroes/Create
         public IActionResult Create()

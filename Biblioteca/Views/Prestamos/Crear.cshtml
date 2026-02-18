@@ -1,6 +1,46 @@
-﻿@{
+﻿@model Biblioteca.Models.ViewModels.PrestamoCreateVm
+
+@{
     ViewData["Title"] = "Crear préstamo";
 }
 
-<h2>Crear préstamo (solo bibliotecario)</h2>
-<p>Aquí iremos con el formulario.</p>
+<h2>Crear préstamo</h2>
+
+@if (TempData["ok"] != null)
+{
+    <p style="color:green">@TempData["ok"]</p>
+}
+
+<div style="color:red">
+    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+    {
+        <div>@err.ErrorMessage</div>
+    }
+</div>
+
+<form asp-action="Crear" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label>Libro</label>
+        <select asp-for="LibroId" asp-items="Model.Libros" class="form-control"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Email del usuario</label>
+        <input asp-for="EmailUsuario" class="form-control" />
+        <span asp-validation-for="EmailUsuario" style="color:red"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Fecha inicio</label>
+        <input asp-for="FechaInicio" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Fecha fin</label>
+        <input asp-for="FechaFin" type="date" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Crear préstamo</button>
+</form>

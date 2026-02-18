@@ -124,7 +124,7 @@ namespace Biblioteca.Areas.Identity.Pages.Account
                         return LocalRedirect("/Home/Bienvenida");
                     }
 
-                    return LocalRedirect("/Prestamos/MisPrestamos");
+                    return LocalRedirect("/Home/IndexLog");
                 }
                 if (result.RequiresTwoFactor)
                 {

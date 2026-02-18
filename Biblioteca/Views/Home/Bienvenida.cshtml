@@ -1,9 +1,10 @@
 ﻿@{
     ViewData["Title"] = "Bienvenida";
 }
-<body>
     <main>
         <h1>Bienvenido @User.Identity.Name</h1> 
+
+        <!-- Contenedor para acciones con Libros -->
         <div class="contenedor_general">
             <div class="contenedor">
                 <h1>Libros</h1>
@@ -12,16 +13,36 @@
                 </div>
                 <div class="tarjeta">
                     <a asp-controller="Libroes" asp-action="Index"><p>Lista de libros</p></a>
-                </div>
-                <div class="contenedor">
-                    <h1>Autores</h1>
-                    <div class="tarjeta">
-                        <a asp-controller="Autors" asp-action="Create"><p>Añadir autor</p></a>
-                    </div>
-                    <div class="tarjeta">
-                        <a asp-controller="Autors" asp-action="Index"><p>Lista de autores</p></a>
-                    </div>
             </div>
+
+            <!-- Contenedor para acciones con Autores -->
+            <div class="contenedor">
+                <h1>Autores</h1>
+                <div class="tarjeta">
+                    <a asp-controller="Autors" asp-action="Create"><p>Añadir autor</p></a>
+                </div>
+                <div class="tarjeta">
+                   <a asp-controller="Autors" asp-action="Index"><p>Lista de autores</p></a>
+                </div>
+            </div>
+            <!-- Contenedor para acciones con Usuarios -->
+            <div class="contenedor">
+                <h1>Usuarios</h1>
+               <div class="tarjeta">
+                  <a asp-controller="Admin" asp-action="CrearUsuario"><p>Crear usuario</p></a>
+                </div>
+                <div class="tarjeta">
+                    <a asp-controller="Admin" asp-action="Usuarios"><p>Lista Usuarios</p></a>
+                </div>
+            </div>
+            <!-- Contenedor para acciones Prestamos -->
+            <div class="contenedor">
+                <h1>Prestamos</h1>
+                <div class="tarjeta">
+                    <a asp-controller="Prestamos" asp-action="Crear"><p>Realizar prestamo</p></a>
+                </div>
+            </div>
+            <!---->
+               
         </div>
     </main>
-</body>

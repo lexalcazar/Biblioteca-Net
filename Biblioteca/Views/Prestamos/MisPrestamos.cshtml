@@ -12,6 +12,8 @@ else
         <thead>
             <tr>
                 <th>LibroId</th>
+                <th>Titulo</th>
+                <th>Fecha inicio</th>
                 <th>Fecha fin</th>
                 <th>Renovaciones</th>
                 <th></th>
@@ -22,6 +24,8 @@ else
             {
                 <tr>
                     <td>@p.LibroId</td>
+                    <td>@p.Libro.Titulo</td>
+                    <td>@p.FechaInicio.ToShortDateString()</td>
                     <td>@p.FechaFin</td>
                     <td>@p.Renovaciones</td>
                     <td>

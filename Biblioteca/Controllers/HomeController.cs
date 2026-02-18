@@ -16,6 +16,11 @@ namespace Biblioteca.Controllers
         {
             return View();
         }
+        [Authorize(Roles ="Usuario")]
+        public IActionResult IndexLog()
+        {
+            return View();
+        }
 
         public IActionResult Privacy()
         {

@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Bienvenida";
+}
+<main>
+        <h1>Bienvenido @User.Identity.Name</h1> 
+    <p>Esta es la página de bienvenida. Desde aquí puedes acceder a las diferentes secciones de la aplicación.</p>
+    <!-- Contenedor para acciones con Usuarios -->
+    <div class="contenedor">
+        <h1>Mis prestamos</h1>
+        <div class="tarjeta">
+            <a asp-controller="Prestamos" asp-action="MisPrestamos"><p>Mis prestamos</p></a>
+        </div>
+    </div>
+    <!-- Contenedor para acciones con Usuarios -->
+    <div class="contenedor">
+        <h1>Catálogo</h1>
+        <div class="tarjeta">
+            <a asp-controller="Libroes" asp-action="Index"><p>Ver Catálogo</p></a>
+        </div>
+    </div>
+</main> 

@@ -1,0 +1,34 @@
+﻿@model List<Biblioteca.Controllers.UsuarioListaVm>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h2>Usuarios</h2>
+
+@if (!Model.Any())
+{
+    <p>No hay usuarios.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>UserName</th>
+                <th>Id</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td>@u.Email</td>
+                    <td>@u.UserName</td>
+                    <td style="font-size:12px">@u.Id</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

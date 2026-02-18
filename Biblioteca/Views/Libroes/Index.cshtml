@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<Biblioteca.Models.Libro>
 
+
 @{
     Layout = null;
 }
@@ -12,9 +13,12 @@
     <title>Index</title>
 </head>
 <body>
+    <h2>Catálogo de libros</h2>
+    @if (User.IsInRole("Bibliotecario")){
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Añadir Libro</a>
 </p>
+    }
 <table class="table">
     <thead>
         <tr>
@@ -42,11 +46,13 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Copias)
             </td>
+                    @if (User.IsInRole("Bibliotecario")){
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Detalles</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">DBorrar</a>
             </td>
+                    }
         </tr>
 }
     </tbody>
